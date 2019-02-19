@@ -39,16 +39,19 @@ display_frame.grid(row=2, column=1)
 
 
 folder_label = ttk.Label(select_folder_frame,font="times 20 bold", text="Folder Selected: ")
-folder_label.grid(row=0, column=0, sticky="w")
+folder_label.grid(row=0, column=2, sticky="w")
 
-folder_selected_label = ttk.Label(select_folder_frame, font="times 12", text="No folder selected")
-folder_selected_label.grid(row=0, column=0, sticky="e")
+source_folder_selected_label = ttk.Label(select_folder_frame, font="times 12", text="No folder selected")
+source_folder_selected_label.grid(row=1, column=2, sticky="e")
 
-
+destination_folder_selected_label = ttk.Label(select_folder_frame, font="times 12", text="No folder selected")
+destination_folder_selected_label.grid(row=2, column=2, sticky="e")
 
 wordInFileName = ttk.Label(file_setup_frame, text="Type of Data: ")
 wordInFileName.grid(row=0, column=0)
 
+message_label = ttk.Label(display_frame, font="times 12")
+message_label.grid(row=0, column=0)
 
 
 def setFile():
@@ -76,70 +79,93 @@ def selectSourceFolder():
 	
 	if newFolder != "":
 		folder = newFolder
-		folder_selected_label['text']= folder
+		source_folder_selected_label['text']= folder
+
+def selectDestinationFolder():
+	newFolder = filedialog.askdirectory()
+	
+	if newFolder != "":
+		folder = newFolder
+		destination_folder_selected_label['text']= folder
 
 def merge():
-	folder = folder_selected_label['text']
+	sourceFolder = source_folder_selected_label['text']
+	destinationFolder = destination_folder_selected_label['text']
 	if dataType.get() == 1:
 		word = "pit"
 	elif dataType.get() == 2:
 		word = "match"
 	else:
+		message_label['text'] = "Sorry there was an error."
 		print("Sorry there was an error.")
 		return
 
 	newFile = word + "Data.csv"
 
-	if Path(folder + "/" + newFile).exists():
-		destfile = open(folder + "/" + newFile, 'a')
+	if Path(destinationFolder + "/" + newFile).exists():
+		destfile = open(destinationFolder + "/" + newFile, 'a')
 	else:
-		labels =open(folder + "/" + word + "Labels.csv", 'r')
-		destfile = open(folder + "/" + newFile, 'a')
+		labels =open(destinationFolder + "/" + word + "Labels.csv", 'r')
+		destfile = open(destinationFolder + "/" + newFile, 'a')
 		destfile.write(labels.read() + "\n")
 		labels.close()
 
-	for filename in os.listdir(folder):
+	for filename in os.listdir(sourceFolder):
 		if filename.lower().find(word) != -1 and filename.endswith(".csv"):
 			if filename == word + "Data.csv" or filename == word + "Labels.csv":
 				continue
 			else:
-				f = open(folder + "/" + filename, 'r')
+				f = open(sourceFolder + "/" + filename, 'r')
 				destfile.write(f.read() + "\n")
 				f.close()
 		else:
 			continue
 
 	destfile.close()
+	message_label['text'] = "Operation Complete! Check it out!"
 	print("Operation Complete! Check it out!")
 
 
 def resetPit():
-	folder = folder_selected_label['text']
+	folder = destination_folder_selected_label['text']
 	if folder.find("pit") != -1:
 		f = open(folder + "/pitData.csv","w")
 		fl = open(folder +"/pitLabels.csv","r")
 		f.write(fl.read() + "\n")
 		f.close
 		fl.close
+		message_label['text'] = "pitData.csv has been reset!"
+		print("pitData.csv has been reset!")
 	else:
+		message_label['text'] = "Oh Snap! I could not reset pitData file."
+		print("Oh Snap! I could not reset pitData file.")
 		return
 
 
 def resetMatch():
-	folder = folder_selected_label['text']
-	if folder.find("pit") != -1:
+	folder = destination_folder_selected_label['text']
+	if folder.find("match") != -1:
 		f = open(folder + "/matchData.csv","w")
 		fl = open(folder +"/matchLabels.csv","r")
 		f.write(fl.read() + "\n")
 		f.close
 		fl.close
+		message_label['text'] = "matchData.csv has been reset!"
+		print("matchData.csv has been reset!")
 	else:
+		message_label['text'] = "Oh Snap! I could not reset matchData file."
+		print("Oh Snap! I could not reset matchData file.")
 		return
 
 
 
-folderBtn = ttk.Button(select_folder_frame, text="select source folder", width=60, command=selectSourceFolder)
-folderBtn.grid(row=1, column=0)
+sourceFolderBtn = ttk.Button(select_folder_frame, text="select source folder", width=30, command=selectSourceFolder)
+sourceFolderBtn.grid(row=1, column=1)
+
+destinationFolderBtn = ttk.Button(select_folder_frame, text="select destination folder", width=30, command=selectDestinationFolder)
+destinationFolderBtn.grid(row=2, column=1)
+
+
 
 mergeBtn = ttk.Button(file_setup_frame, text="Merge Files", width=14, command=merge)
 mergeBtn.grid(row=2, column=2)
