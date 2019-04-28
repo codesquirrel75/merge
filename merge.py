@@ -105,9 +105,9 @@ def merge():
 	if Path(destinationFolder + "/" + newFile).exists():
 		destfile = open(destinationFolder + "/" + newFile, 'ab')
 	else:
-		labels =open(destinationFolder + "/" + word + "Labels.csv", 'rb')
-		destfile = open(destinationFolder + "/" + newFile, 'ab')
-		destfile.write(labels.read())
+		labels =open(destinationFolder + "/" + word + "Labels.csv", 'r')
+		destfile = open(destinationFolder + "/" + newFile, 'a')
+		destfile.write(labels.read() + "\n")
 		labels.close()
 
 	for filename in os.listdir(sourceFolder):
@@ -129,9 +129,9 @@ def merge():
 def resetPit():
 	folder = destination_folder_selected_label['text']
 	if folder.find("pit") != -1:
-		f = open(folder + "/pitData.csv","wb")
-		fl = open(folder +"/pitLabels.csv","rb")
-		f.write(fl.read())
+		f = open(folder + "/pitData.csv","w")
+		fl = open(folder +"/pitLabels.csv","r")
+		f.write(fl.read() + "\n")
 		f.close
 		fl.close
 		message_label['text'] = "pitData.csv has been reset!"
@@ -145,9 +145,9 @@ def resetPit():
 def resetMatch():
 	folder = destination_folder_selected_label['text']
 	if folder.find("match") != -1:
-		f = open(folder + "/matchData.csv","wb")
-		fl = open(folder +"/matchLabels.csv","rb")
-		f.write(fl.read())
+		f = open(folder + "/matchData.csv","w")
+		fl = open(folder +"/matchLabels.csv","r")
+		f.write(fl.read() + "\n")
 		f.close
 		fl.close
 		message_label['text'] = "matchData.csv has been reset!"
